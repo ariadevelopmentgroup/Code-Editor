@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aria Code Editor</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #0f3460;
+            --text-color: #e6e6e6;
+            --background-color: #0f0f1a;
+            --surface-color: #1a1a2e;
+            --error-color: #e94560;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --highlight-color: #533483;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 0.5rem;
+        }
+
+        .search-container {
+            position: relative;
+            width: 40%;
+            max-width: 500px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+        }
+
+        /* Main Content Styles */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .editor-container {
+            display: flex;
+            flex: 1;
+            gap: 1rem;
+            min-height: 500px;
+        }
+
+        .panel {
+            flex: 1;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-header {
+            background-color: var(--primary-color);
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+        }
+
+        /* Editor Specific Styles */
+        #editor {
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 0.5rem;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: none;
+            resize: none;
+        }
+
+        /* Preview Specific Styles */
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            padding: 0.5rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Updates Section */
+        .updates-section {
+            margin-top: 1rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .updates-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .update-card {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .update-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .update-card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .update-card-date {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .update-card-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--success-color);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--primary-color);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-top: auto;
+        }
+
+        /* Notification Styles */
+        .notification-container {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .notification {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            max-width: 300px;
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.1), transparent);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error-color);
+            background: linear-gradient(90deg, rgba(233, 69, 96, 0.1), transparent);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--info-color);
+            background: linear-gradient(90deg, rgba(33, 150, 243, 0.1), transparent);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning-color);
+            background: linear-gradient(90deg, rgba(255, 152, 0, 0.1), transparent);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Drag & Drop Styles */
+        .dropzone {
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            background-color: rgba(15, 52, 96, 0.05);
+        }
+
+        .dropzone:hover {
+            border-color: var(--info-color);
+            background-color: rgba(33, 150, 243, 0.05);
+        }
+
+        .dropzone.active {
+            background-color: rgba(33, 150, 243, 0.1);
+            border-color: var(--info-color);
+            transform: scale(1.01);
+        }
+
+        .dropzone-text {
+            font-size: 1rem;
+            color: var(--accent-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+            }
+
+            .search-container {
+                width: 60%;
+            }
+
+            .header-actions {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .updates-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-container {
+                width: 50%;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .panel-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-color);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .mobile-menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* CodeMirror Customization */
+        .CodeMirror {
+            height: 100% !important;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            border-radius: 0 0 8px 8px;
+            transition: all 0.3s ease;
+        }
+
+        .cm-s-material.CodeMirror {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+        }
+
+        /* Autocomplete Styles */
+        .CodeMirror-hints {
+            position: absolute;
+            z-index: 10;
+            overflow: hidden;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            max-height: 20em;
+            overflow-y: auto;
+        }
+
+        .CodeMirror-hint {
+            margin: 0;
+            padding: 0.5rem;
+            white-space: pre;
+            cursor: pointer;
+        }
+
+        li.CodeMirror-hint-active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: var(--surface-color);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .settings-panel.active {
+            transform: translateX(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .settings-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        .settings-item {
+            margin-bottom: 1rem;
+        }
+
+        .settings-item label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .settings-item select,
+        .settings-item input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .settings-item select:focus,
+        .settings-item input:focus {
+            border-color: var(--info-color);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background-color: var(--primary-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--info-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Enhanced UI Styles */
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Enhanced Footer */
+        footer {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            padding: 1.5rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced Mobile Menu */
+        .mobile-menu {
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-menu-items {
+            margin-top: 2rem;
+        }
+
+        .mobile-menu-items .btn {
+            margin-bottom: 1rem;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        /* Enhanced Search Input */
+        .search-container input {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container input:focus {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: var(--accent-color);
+        }
+
+        /* Enhanced Logo */
+        .logo {
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .logo:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--info-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .logo:hover::after {
+            width: 80%;
+        }
+
+        /* Enhanced Settings Panel */
+
+        /* Enhanced CodeMirror */
+
+        /* Add CSS class for the editing effect */
+        .CodeMirror.editing {
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+    </style>
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">
+            <i class="material-icons">code</i>
+            Aria Code Editor 
+        </a>
+        <div class="search-container">
+            <i class="material-icons">search</i>
+            <input type="text" id="search-input" placeholder="Որոնել կոդի մեջ...">
+        </div>
+        <div class="header-actions">
+            <button class="btn" id="settings-btn">
+                <i class="material-icons">settings</i>
+                Կարգավորումներ
+            </button>
+            <button class="btn btn-primary" id="download-btn">
+                <i class="material-icons">download</i>
+                Ներբեռնել
+            </button>
+        </div>
+        <button class="mobile-menu-btn">
+            <i class="material-icons">menu</i>
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- File Drop Zone -->
+        <div class="dropzone" id="dropzone">
+            <p class="dropzone-text">
+                <i class="material-icons" style="font-size: 2rem; margin-bottom: 0.5rem;">cloud_upload</i><br>
+                Քաշեք և թողեք ֆայլերը այստեղ կամ սեղմեք՝ վերբեռնելու համար (մինչև 3 ԳԲ)
+            </p>
+            <input type="file" id="file-input" style="display: none;">
+        </div>
+
+        <!-- Editor Container -->
+        <div class="editor-container">
+            <!-- Code Editor Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="material-icons">code</i>
+                        Կոդի խմբագիր
+                    </div>
+                    <div class="panel-actions">
+                        <select class="language-selector" id="language-selector">
+                            <option value="text/html">HTML</option>
+                            <option value="text/css">CSS</option>
+                            <option value="text/javascript">JavaScript</option>
+                            <option value="text/x-python">Python</option>
+                            <option value="text/x-java">Java</option>
+                            <option value="text/x-c++src">C++</option>
+                            <option value="text/x-csharp">C#</option>
+                            <option value="text/x-php">PHP</option>
+                            <option value="text/x-ruby">Ruby</option>
+                            <option value="text/x-go">Go</option>
+                            <option value="text/x-rust">Rust</option>
+                            <option value="text/x-swift">Swift</option>
+                            <option value="text/x-typescript">TypeScript</option>
+                        </select>
+                        <button class="btn" id="backup-btn">
+                            <i class="material-icons">save</i>
+                            Backup
+                        </button>
+                        <button class="btn" id="import-btn">
+                            <i class="material-icons">upload_file</i>
+                            Ներմուծում
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <textarea id="editor"></textarea>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="material-icons">visibility</i>
+                        Նախադիտում
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn" id="refresh-btn">
+                            <i class="material-icons">refresh</i>
+                            Թարմացնել
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <iframe id="preview-frame"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Updates Section -->
+        <div class="updates-section">
+            <div class="section-header">
+                <h2 class="section-title">Թարմացումներ</h2>
+                <button class="btn" id="check-updates-btn">
+                    <i class="material-icons">update</i>
+                    Ստուգել թարմացումները
+                </button>
+            </div>
+            <div class="updates-container" id="updates-container">
+                <!-- Update cards will be dynamically added here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            Copyright © 2025 | Aria Code Editor | All rights reserved. Designed in Armenia by Aria Code.
+        </div>
+    </footer>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">
+                <i class="material-icons">code</i>
+                Aria Code Editor
+            </div>
+            <button class="mobile-menu-close" id="mobile-menu-close">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <div class="mobile-menu-items">
+            <button class="btn" id="mobile-settings-btn">
+                <i class="material-icons">settings</i>
+                Կարգավորումներ
+            </button>
+            <button class="btn" id="mobile-download-btn">
+                <i class="material-icons">download</i>
+                Ներբեռնել
+            </button>
+            <button class="btn" id="mobile-backup-btn">
+                <i class="material-icons">save</i>
+                Backup
+            </button>
+            <button class="btn" id="mobile-import-btn">
+                <i class="material-icons">upload_file</i>
+                Ներմուծել
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h2>Կարգավորումներ</h2>
+            <button class="settings-close" id="settings-close">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <div class="settings-section">
+            <h3 class="settings-section-title">Խմբագիր</h3>
+            <div class="settings-item">
+                <label for="theme-selector">Ֆոնի գույն</label>
+                <select id="theme-selector">
+                    <option value="material">Մութ</option>
+                    <option value="material-lighter">Լույս</option>
+                </select>
+            </div>
+            <div class="settings-item">
+                <label for="font-size">Տառաչափ</label>
+                <input type="number" id="font-size" min="10" max="24" value="14">
+            </div>
+            <div class="settings-item">
+                <label for="tab-size">Ներդիրի չափ</label>
+                <input type="number" id="tab-size" min="2" max="8" value="4">
+            </div>
+        </div>
+        <div class="settings-section">
+            <h3 class="settings-section-title">Ավտոպահպանում</h3>
+            <div class="settings-item">
+                <label for="autosave-interval">Ավտոպահպանման ընդմիջում (վայրկյան)</label>
+                <input type="number" id="autosave-interval" min="5" max="300" value="30">
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container">
+        <!-- Notifications will be dynamically added here -->
+    </div>
+
+    <!-- Import Backup Input (Hidden) -->
+    <input type="file" id="import-input" accept=".json" style="display: none;">
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/ruby/ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/go/go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/rust/rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/swift/swift.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/css-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/search/search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/search/jump-to-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/dialog/dialog.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // DOM Elements
+        const editor = document.getElementById('editor');
+        const previewFrame = document.getElementById('preview-frame');
+        const languageSelector = document.getElementById('language-selector');
+        const backupBtn = document.getElementById('backup-btn');
+        const importBtn = document.getElementById('import-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const searchInput = document.getElementById('search-input');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsPanel = document.getElementById('settings-panel');
+        const settingsClose = document.getElementById('settings-close');
+        const themeSelector = document.getElementById('theme-selector');
+        const fontSize = document.getElementById('font-size');
+        const tabSize = document.getElementById('tab-size');
+        const autosaveInterval = document.getElementById('autosave-interval');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+        const mobileDownloadBtn = document.getElementById('mobile-download-btn');
+        const mobileBackupBtn = document.getElementById('mobile-backup-btn');
+        const mobileImportBtn = document.getElementById('mobile-import-btn');
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const importInput = document.getElementById('import-input');
+        const updatesContainer = document.getElementById('updates-container');
+        const checkUpdatesBtn = document.getElementById('check-updates-btn');
+        const notificationContainer = document.getElementById('notification-container');
+
+        // CodeMirror Instance
+        let codeMirror;
+
+        // Current file name and extension
+        let currentFileName = 'Aria Code Editor File.html';
+        let currentFileExtension = 'html';
+
+        // Settings
+        let settings = {
+            theme: 'material',
+            fontSize: 14,
+            tabSize: 4,
+            autosaveInterval: 30
+        };
+
+        // Autosave timer
+        let autosaveTimer;
+
+        // Updates data
+        let updates = [];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            initCodeMirror();
+            initPreview();
+            loadFromLocalStorage();
+            setupEventListeners();
+            startAutosave();
+            loadUpdates();
+            showNotification('Բարի գալուստ Aria Code Editor!', 'info');
+        });
+
+        // Initialize CodeMirror
+        function initCodeMirror() {
+            codeMirror = CodeMirror.fromTextArea(editor, {
+                mode: 'text/html',
+                theme: 'material',
+                lineNumbers: true,
+                autoCloseBrackets: true,
+                autoCloseTags: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                tabSize: 4,
+                indentUnit: 4,
+                indentWithTabs: false,
+                lineWrapping: true,
+                extraKeys: {
+                    'Ctrl-Space': 'autocomplete',
+                    'Ctrl-F': 'findPersistent',
+                    'Ctrl-S': () => saveToLocalStorage()
+                }
+            });
+
+            codeMirror.on('change', () => {
+                updatePreview();
+            });
+        }
+
+        // Initialize Preview
+        function initPreview() {
+            const previewDocument = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            previewDocument.open();
+            previewDocument.write('');
+            previewDocument.close();
+        }
+
+        // Update Preview
+        function updatePreview() {
+            const code = codeMirror.getValue();
+            const previewDocument = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            
+            previewDocument.open();
+            previewDocument.write(code);
+            previewDocument.close();
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Language selector
+            languageSelector.addEventListener('change', () => {
+                codeMirror.setOption('mode', languageSelector.value);
+                updateFileExtension(languageSelector.value);
+                showNotification(`Լեզուն փոխվել է ${languageSelector.options[languageSelector.selectedIndex].text}`, 'info');
+            });
+
+            // Backup button
+            backupBtn.addEventListener('click', createBackup);
+            mobileBackupBtn.addEventListener('click', createBackup);
+
+            // Import button
+            importBtn.addEventListener('click', () => importInput.click());
+            mobileImportBtn.addEventListener('click', () => importInput.click());
+            importInput.addEventListener('change', importBackup);
+
+            // Download button
+            downloadBtn.addEventListener('click', downloadCode);
+            mobileDownloadBtn.addEventListener('click', downloadCode);
+
+            // Refresh button
+            refreshBtn.addEventListener('click', updatePreview);
+
+            // Search input
+            searchInput.addEventListener('input', searchInCode);
+
+            // Settings
+            settingsBtn.addEventListener('click', () => settingsPanel.classList.add('active'));
+            mobileSettingsBtn.addEventListener('click', () => {
+                settingsPanel.classList.add('active');
+                mobileMenu.classList.remove('active');
+            });
+            settingsClose.addEventListener('click', () => settingsPanel.classList.remove('active'));
+
+            // Theme selector
+            themeSelector.addEventListener('change', () => {
+                settings.theme = themeSelector.value;
+                codeMirror.setOption('theme', settings.theme);
+                saveSettings();
+                showNotification(`Ֆոնի գույնը փոխվել է ${themeSelector.options[themeSelector.selectedIndex].text}`, 'info');
+            });
+
+            // Font size
+            fontSize.addEventListener('change', () => {
+                settings.fontSize = parseInt(fontSize.value);
+                document.querySelector('.CodeMirror').style.fontSize = `${settings.fontSize}px`;
+                saveSettings();
+                showNotification(`Տառաչափը փոխվել է ${settings.fontSize}px`, 'info');
+            });
+
+            // Tab size
+            tabSize.addEventListener('change', () => {
+                settings.tabSize = parseInt(tabSize.value);
+                codeMirror.setOption('tabSize', settings.tabSize);
+                codeMirror.setOption('indentUnit', settings.tabSize);
+                saveSettings();
+                showNotification(`Ներդիրի չափը փոխվել է ${settings.tabSize}`, 'info');
+            });
+
+            // Autosave interval
+            autosaveInterval.addEventListener('change', () => {
+                settings.autosaveInterval = parseInt(autosaveInterval.value);
+                restartAutosave();
+                saveSettings();
+                showNotification(`Ավտոպահպանման ընդմիջումը փոխվել է ${settings.autosaveInterval} seconds`, 'info');
+            });
+
+            // Mobile menu
+            mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.add('active'));
+            mobileMenuClose.addEventListener('click', () => mobileMenu.classList.remove('active'));
+
+            // Dropzone
+            dropzone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('active');
+            });
+            
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('active');
+            });
+            
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('active');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFileDrop(e.dataTransfer.files);
+                }
+            });
+
+            // Check for updates
+            checkUpdatesBtn.addEventListener('click', checkForUpdates);
+        }
+
+        // Save to Local Storage
+        function saveToLocalStorage() {
+            const code = codeMirror.getValue();
+            localStorage.setItem('code', code);
+            localStorage.setItem('language', languageSelector.value);
+            localStorage.setItem('fileName', currentFileName);
+            showNotification('Կոդը պահպանվել է տեղական պահեստում', 'success');
+        }
+
+        // Load from Local Storage
+        function loadFromLocalStorage() {
+            const code = localStorage.getItem('code');
+            const language = localStorage.getItem('language');
+            const fileName = localStorage.getItem('fileName');
+            const savedSettings = localStorage.getItem('settings');
+            
+            if (code) {
+                codeMirror.setValue(code);
+            }
+            
+            if (language) {
+                languageSelector.value = language;
+                codeMirror.setOption('mode', language);
+                updateFileExtension(language);
+            }
+            
+            if (fileName) {
+                currentFileName = fileName;
+            }
+            
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                applySettings();
+            }
+            
+            updatePreview();
+        }
+
+        // Apply Settings
+        function applySettings() {
+            themeSelector.value = settings.theme;
+            codeMirror.setOption('theme', settings.theme);
+            
+            fontSize.value = settings.fontSize;
+            document.querySelector('.CodeMirror').style.fontSize = `${settings.fontSize}px`;
+            
+            tabSize.value = settings.tabSize;
+            codeMirror.setOption('tabSize', settings.tabSize);
+            codeMirror.setOption('indentUnit', settings.tabSize);
+            
+            autosaveInterval.value = settings.autosaveInterval;
+        }
+
+        // Save Settings
+        function saveSettings() {
+            localStorage.setItem('settings', JSON.stringify(settings));
+        }
+
+        // Start Autosave
+        function startAutosave() {
+            autosaveTimer = setInterval(() => {
+                saveToLocalStorage();
+            }, settings.autosaveInterval * 1000);
+        }
+
+        // Restart Autosave
+        function restartAutosave() {
+            clearInterval(autosaveTimer);
+            startAutosave();
+        }
+
+        // Create Backup
+        function createBackup() {
+            const backup = {
+                code: codeMirror.getValue(),
+                language: languageSelector.value,
+                fileName: currentFileName,
+                settings: settings,
+                timestamp: new Date().toISOString()
+            };
+            
+            const backupStr = JSON.stringify(backup);
+            const blob = new Blob([backupStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentFileName.split('.')[0]}_backup_${new Date().toISOString().replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showNotification('Backup-ը հաջողությամբ ստեղծվել է', 'success');
+        }
+
+        // Import Backup
+        function importBackup(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        const backup = JSON.parse(event.target.result);
+                        
+                        codeMirror.setValue(backup.code);
+                        languageSelector.value = backup.language;
+                        codeMirror.setOption('mode', backup.language);
+                        currentFileName = backup.fileName;
+                        
+                        if (backup.settings) {
+                            settings = backup.settings;
+                            applySettings();
+                            saveSettings();
+                        }
+                        
+                        updatePreview();
+                        showNotification('Backup-ը հաջողությամբ ներմուծվել է', 'success');
+                    } catch (error) {
+                        showNotification('Չհաջողվեց ներմուծել Backup-ը: Անվավեր ֆայլի ձևաչափ', 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            // Reset the input
+            e.target.value = '';
+        }
+
+        // Download Code
+        function downloadCode() {
+            const code = codeMirror.getValue();
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showNotification(`Կոդը ներբեռնվել է որպես ${currentFileName}`, 'success');
+        }
+
+        // Search in Code
+        function searchInCode() {
+            const query = searchInput.value;
+            
+            if (query) {
+                const cursor = codeMirror.getSearchCursor(query);
+                
+                if (cursor.findNext()) {
+                    codeMirror.setSelection(cursor.from(), cursor.to());
+                    codeMirror.scrollIntoView({ from: cursor.from(), to: cursor.to() }, 20);
+                }
+            }
+        }
+
+        // Handle File Select
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            handleFile(file);
+            
+            // Reset the input
+            e.target.value = '';
+        }
+
+        // Handle File Drop
+        function handleFileDrop(files) {
+            const file = files[0];
+            handleFile(file);
+        }
+
+        // Handle File
+        function handleFile(file) {
+            if (file) {
+                // Check file size (3GB limit)
+                if (file.size > 3 * 1024 * 1024 * 1024) {
+                    showNotification('Ֆայլի չափը գերազանցում է 3 ԳԲ սահմանաչափը', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    codeMirror.setValue(event.target.result);
+                    
+                    // Update file name and language
+                    currentFileName = file.name;
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    updateLanguageFromExtension(extension);
+                    
+                    updatePreview();
+                    showNotification(`File "${file.name}" հաջողությամբ բեռնվել է`, 'success');
+                };
+                
+                reader.onerror = () => {
+                    showNotification('Ֆայլի ընթերցման սխալ', 'error');
+                };
+                
+                reader.readAsText(file);
+            }
+        }
+
+        // Update Language from Extension
+        function updateLanguageFromExtension(extension) {
+            let mode;
+            
+            switch (extension) {
+                case 'html':
+                case 'htm':
+                    mode = 'text/html';
+                    break;
+                case 'css':
+                    mode = 'text/css';
+                    break;
+                case 'js':
+                    mode = 'text/javascript';
+                    break;
+                case 'py':
+                    mode = 'text/x-python';
+                    break;
+                case 'java':
+                    mode = 'text/x-java';
+                    break;
+                case 'cpp':
+                case 'c':
+                case 'h':
+                    mode = 'text/x-c++src';
+                    break;
+                case 'cs':
+                    mode = 'text/x-csharp';
+                    break;
+                case 'php':
+                    mode = 'text/x-php';
+                    break;
+                case 'rb':
+                    mode = 'text/x-ruby';
+                    break;
+                case 'go':
+                    mode = 'text/x-go';
+                    break;
+                case 'rs':
+                    mode = 'text/x-rust';
+                    break;
+                case 'swift':
+                    mode = 'text/x-swift';
+                    break;
+                case 'ts':
+                    mode = 'text/x-typescript';
+                    break;
+                default:
+                    mode = 'text/plain';
+            }
+            
+            languageSelector.value = mode;
+            codeMirror.setOption('mode', mode);
+        }
+
+        // Update File Extension
+        function updateFileExtension(mode) {
+            let extension;
+            
+            switch (mode) {
+                case 'text/html':
+                    extension = 'html';
+                    break;
+                case 'text/css':
+                    extension = 'css';
+                    break;
+                case 'text/javascript':
+                    extension = 'js';
+                    break;
+                case 'text/x-python':
+                    extension = 'py';
+                    break;
+                case 'text/x-java':
+                    extension = 'java';
+                    break;
+                case 'text/x-c++src':
+                    extension = 'cpp';
+                    break;
+                case 'text/x-csharp':
+                    extension = 'cs';
+                    break;
+                case 'text/x-php':
+                    extension = 'php';
+                    break;
+                case 'text/x-ruby':
+                    extension = 'rb';
+                    break;
+                case 'text/x-go':
+                    extension = 'go';
+                    break;
+                case 'text/x-rust':
+                    extension = 'rs';
+                    break;
+                case 'text/x-swift':
+                    extension = 'swift';
+                    break;
+                case 'text/x-typescript':
+                    extension = 'ts';
+                    break;
+                default:
+                    extension = 'txt';
+            }
+            
+            // Update file name if it's the default
+            if (currentFileName === 'Aria Code Editor File.html' || currentFileName.startsWith('Aria Code Editor File')) {
+                currentFileName = `Aria Code Editor File.${extension}`;
+            } else {
+                // Otherwise, just update the extension
+                const nameParts = currentFileName.split('.');
+                if (nameParts.length > 1) {
+                    nameParts.pop();
+                }
+                currentFileName = `${nameParts.join('.')}.${extension}`;
+            }
+            
+            currentFileExtension = extension;
+        }
+
+        // Load Updates
+        function loadUpdates() {
+            // Sample updates data
+            updates = [
+                {
+                    id: 1,
+                    title: 'Նախնական թողարկում',
+                    date: '2025-01-01',
+                    description: 'Aria Code Editor-ի առաջին տարբերակը՝ հիմնական խմբագրման հնարավորություններով:'
+                },
+                {
+                    id: 2,
+                    title: 'Շարահյուսական ընդգծում',
+                    date: '2025-02-15',
+                    description: 'Ավելացվել է ծրագրավորման լեզուների շարահյուսական ընդգծման աջակցության գործառույթը:'
+                },
+                {
+                    id: 3,
+                    title: 'Կրկնօրինակում և վերականգնում',
+                    date: '2025-03-10',
+                    description: 'Ավելացվել է կոդը կրկնօրինակելու և վերականգնելու գործառույթը:'
+                },
+                {
+                    id: 4,
+                    title: 'Իրական ժամանակի նախադիտում',
+                    date: '2025-04-01',
+                    description: 'Ավելացվել է կոդի իրական ժամանակի նախադիտման գործառույթը:'
+                }
+            ];
+            
+            renderUpdates();
+        }
+
+        // Render Updates
+        function renderUpdates() {
+            updatesContainer.innerHTML = '';
+            
+            // Sort updates by date (newest first)
+            updates.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            updates.forEach(update => {
+                const card = document.createElement('div');
+                card.className = 'update-card';
+                
+                const title = document.createElement('h3');
+                title.className = 'update-card-title';
+                title.textContent = update.title;
+                
+                const date = document.createElement('p');
+                date.className = 'update-card-date';
+                date.textContent = formatDate(update.date);
+                
+                const description = document.createElement('p');
+                description.className = 'update-card-description';
+                description.textContent = update.description;
+                
+                card.appendChild(title);
+                card.appendChild(date);
+                card.appendChild(description);
+                
+                // Add NEW badge if the update is less than 3 days old
+                const updateDate = new Date(update.date);
+                const now = new Date();
+                const diffTime = Math.abs(now - updateDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 3) {
+                    const badge = document.createElement('span');
+                    badge.className = 'new-badge';
+                    badge.textContent = 'NEW';
+                    card.appendChild(badge);
+                }
+                
+                updatesContainer.appendChild(card);
+            });
+        }
+
+        // Format Date
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric'};
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Check for Updates
+        function checkForUpdates() {
+            showNotification('Թարմացումների ստուգում...', 'info');
+            
+            // Simulate checking for updates
+            setTimeout(() => {
+                // Simulate a new update
+                const newUpdate = {
+                    id: updates.length + 1,
+                    title: 'Նոր գործառույթ: Auto-complete',
+                    date: new Date().toISOString().split('T')[0],
+                    description: 'Ավելացվել է ավտոմատ լրացման խելացի առաջարկներ բոլոր աջակցվող լեզուների համար:'
+                };
+                
+                updates.unshift(newUpdate);
+                renderUpdates();
+                
+                showNotification('Հասանելի է նոր թարմացում!', 'success');
+            }, 1500);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icon = document.createElement('i');
+            icon.className = 'material-icons';
+            
+            switch (type) {
+                case 'success':
+                    icon.textContent = 'check_circle';
+                    break;
+                case 'error':
+                    icon.textContent = 'error';
+                    break;
+                case 'warning':
+                    icon.textContent = 'warning';
+                    break;
+                default:
+                    icon.textContent = 'info';
+            }
+            
+            const text = document.createElement('span');
+            text.textContent = message;
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
+            
+            notificationContainer.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                
+                setTimeout(() => {
+                    notificationContainer.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add loading indicator when performing operations
+        function showLoading(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification info loading';
+            notification.id = 'loading-notification';
+            
+            const icon = document.createElement('i');
+            icon.className = 'material-icons';
+            icon.textContent = 'hourglass_empty';
+            
+            const text = document.createElement('span');
+            text.textContent = message || 'Բեռնվում է...';
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
+            
+            notificationContainer.appendChild(notification);
+            
+            return notification;
+        }
+
+        function hideLoading(loadingElement) {
+            if (loadingElement) {
+                loadingElement.style.animation = 'slideOut 0.3s ease-out forwards';
+                
+                setTimeout(() => {
+                    if (loadingElement.parentNode) {
+                        loadingElement.parentNode.removeChild(loadingElement);
+                    }
+                }, 300);
+            }
+        }
+
+        // Enhance the check for updates function with loading indicator
+        checkUpdatesBtn.addEventListener('click', () => {
+            const loading = showLoading('Թարմացումների ստուգում...');
+            
+            // Simulate checking for updates
+            setTimeout(() => {
+                // Simulate a new update
+                const newUpdate = {
+                    id: updates.length + 1,
+                    title: 'Նոր գործառույթ: Auto-complete',
+                    date: new Date().toISOString().split('T')[0],
+                    description: 'Ավելացվել է ավտոմատ լրացման խելացի առաջարկներ բոլոր աջակցվող լեզուների համար:'
+                };
+                
+                updates.unshift(newUpdate);
+                renderUpdates();
+                
+                hideLoading(loading);
+                showNotification('Հասանելի է նոր թարմացում!', 'success');
+            }, 1500);
+        }, { once: false });
+
+        // Add subtle animation to the editor when typing
+        codeMirror.on('change', () => {
+            const editorElement = document.querySelector('.CodeMirror');
+            editorElement.classList.add('editing');
+            
+            setTimeout(() => {
+                editorElement.classList.remove('editing');
+            }, 300);
+        });
+
+        // Add a welcome animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach((panel, index) => {
+                panel.style.opacity = '0';
+                panel.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    panel.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    panel.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
+                }, 100 + (index * 150));
+            });
+        });
+
+        // Add a pulse effect to the NEW badge
+        setInterval(() => {
+            const badges = document.querySelectorAll('.new-badge');
+            badges.forEach(badge => {
+                badge.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    badge.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }, 3000);
+
+        // Add a visual feedback when saving
+        function visualFeedbackOnSave() {
+            const editorElement = document.querySelector('.CodeMirror');
+            editorElement.style.transition = 'box-shadow 0.3s ease';
+            editorElement.style.boxShadow = '0 0 0 2px rgba(76, 175, 80, 0.5)';
+            
+            setTimeout(() => {
+                editorElement.style.boxShadow = '';
+            }, 500);
+        }
+
+        // Override the saveToLocalStorage function to add visual feedback
+        const originalSaveToLocalStorage = saveToLocalStorage;
+        saveToLocalStorage = function() {
+            originalSaveToLocalStorage();
+            visualFeedbackOnSave();
+        };
+
+        // Add CSS class for the editing effect
+        const style = document.createElement('style');
+        style.textContent = `
+.CodeMirror.editing {
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+`;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+
