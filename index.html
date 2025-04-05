@@ -6,12 +6,15 @@
     <title>Aria Code Editor</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Dark Theme (Default) */
             --primary-color: #1a1a2e;
             --secondary-color: #16213e;
             --accent-color: #0f3460;
-            --text-color: #e6e6e6;
+            --text-color: #ffffff;
+            --text-secondary-color: #b0b0b0;
             --background-color: #0f0f1a;
             --surface-color: #1a1a2e;
             --error-color: #e94560;
@@ -19,6 +22,32 @@
             --warning-color: #ff9800;
             --info-color: #2196f3;
             --highlight-color: #533483;
+            --border-color: #2a2a4a;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-gradient: linear-gradient(145deg, #1a1a2e, #16213e);
+            --button-gradient: linear-gradient(135deg, #2196f3, #1976d2);
+            --button-hover-gradient: linear-gradient(135deg, #1e88e5, #1565c0);
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --primary-color: #f8f9fa;
+            --secondary-color: #e9ecef;
+            --accent-color: #dee2e6;
+            --text-color: #212529;
+            --text-secondary-color: #6c757d;
+            --background-color: #ffffff;
+            --surface-color: #f8f9fa;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --info-color: #0d6efd;
+            --highlight-color: #6610f2;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-gradient: linear-gradient(145deg, #ffffff, #f8f9fa);
+            --button-gradient: linear-gradient(135deg, #0d6efd, #0a58ca);
+            --button-hover-gradient: linear-gradient(135deg, #0b5ed7, #0a53be);
         }
 
         * {
@@ -34,6 +63,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Header Styles */
@@ -43,10 +73,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 8px var(--shadow-color);
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: background-color 0.3s ease;
         }
 
         .logo {
@@ -56,6 +87,7 @@
             text-decoration: none;
             display: flex;
             align-items: center;
+            transition: color 0.3s ease;
         }
 
         .logo i {
@@ -72,10 +104,17 @@
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: var(--secondary-color);
             color: var(--text-color);
             font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .search-container input:focus {
+            box-shadow: 0 4px 10px var(--shadow-color);
+            outline: none;
         }
 
         .search-container i {
@@ -83,7 +122,8 @@
             left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--accent-color);
+            color: var(--text-secondary-color);
+            transition: color 0.3s ease;
         }
 
         .header-actions {
@@ -93,16 +133,24 @@
 
         .btn {
             padding: 0.6rem 1.2rem;
-            border-radius: 6px;
+            border: none;
+            border-radius: 8px;
             font-weight: 500;
             letter-spacing: 0.3px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            background: var(--button-gradient);
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 8px var(--shadow-color);
+            background: var(--button-hover-gradient);
         }
 
         .btn:active {
@@ -110,11 +158,30 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
+            background: var(--button-gradient);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            background: var(--button-hover-gradient);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         /* Main Content Styles */
@@ -122,53 +189,58 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
-            gap: 1rem;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            transition: padding 0.3s ease;
         }
 
         .editor-container {
             display: flex;
             flex: 1;
-            gap: 1rem;
+            gap: 1.5rem;
             min-height: 500px;
         }
 
         .panel {
             flex: 1;
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: var(--card-gradient);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px var(--shadow-color);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         .panel:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 24px var(--shadow-color);
+            transform: translateY(-2px);
         }
 
         .panel-header {
-            background-color: var(--primary-color);
-            padding: 0.75rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 8px 8px 0 0;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s ease;
         }
 
         .panel-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .panel-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
         .panel-content {
@@ -189,6 +261,7 @@
             color: var(--text-color);
             border: none;
             resize: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Preview Specific Styles */
@@ -197,16 +270,29 @@
             height: 100%;
             border: none;
             background-color: white;
+            transition: background-color 0.3s ease;
         }
 
         /* Language Selector */
         .language-selector {
-            padding: 0.5rem;
+            padding: 0.6rem 1rem;
             background-color: var(--secondary-color);
             color: var(--text-color);
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .language-selector:hover {
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        .language-selector:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--info-color);
         }
 
         /* Updates Section */
@@ -218,101 +304,133 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .section-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 500;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .updates-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
         }
 
         .update-card {
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            padding: 1rem;
+            background: var(--card-gradient);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 1.5rem;
             position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             border-left: 4px solid var(--info-color);
+            overflow: hidden;
         }
 
         .update-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+
+        .update-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .update-card:hover::before {
+            opacity: 1;
         }
 
         .update-card-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 500;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .update-card-date {
-            font-size: 0.8rem;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary-color);
+            margin-bottom: 0.75rem;
+            transition: color 0.3s ease;
         }
 
         .update-card-description {
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .new-badge {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background-color: var(--success-color);
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, var(--success-color), #2e7d32);
             color: white;
             font-size: 0.7rem;
             font-weight: 700;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            background: linear-gradient(135deg, #4caf50, #2e7d32);
-            border-radius: 4px;
-            font-weight: 700;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
             letter-spacing: 0.5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         /* Footer Styles */
         footer {
-            background-color: var(--primary-color);
-            padding: 1rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            padding: 1.5rem;
             text-align: center;
-            font-size: 0.9rem;
-            color: var(--accent-color);
+            font-size: 0.95rem;
+            color: var(--text-secondary-color);
             margin-top: auto;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* Notification Styles */
         .notification-container {
             position: fixed;
-            bottom: 1rem;
-            right: 1rem;
+            bottom: 1.5rem;
+            right: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
             z-index: 1000;
         }
 
         .notification {
             background-color: var(--surface-color);
             color: var(--text-color);
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px var(--shadow-color);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            max-width: 300px;
+            max-width: 350px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .notification.success {
@@ -359,18 +477,36 @@
 
         /* Drag & Drop Styles */
         .dropzone {
-            border: 2px dashed var(--accent-color);
-            border-radius: 8px;
-            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             transition: all 0.3s ease;
-            background-color: rgba(15, 52, 96, 0.05);
+            background-color: rgba(33, 150, 243, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropzone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .dropzone:hover {
             border-color: var(--info-color);
             background-color: rgba(33, 150, 243, 0.05);
+        }
+
+        .dropzone:hover::before {
+            opacity: 1;
         }
 
         .dropzone.active {
@@ -380,12 +516,27 @@
         }
 
         .dropzone-text {
-            font-size: 1rem;
-            color: var(--accent-color);
+            font-size: 1.1rem;
+            color: var(--text-secondary-color);
+            transition: color 0.3s ease;
+        }
+
+        .dropzone:hover .dropzone-text {
+            color: var(--text-color);
         }
 
         /* Responsive Styles */
+        @media (max-width: 992px) {
+            .updates-container {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
+            main {
+                padding: 1rem;
+            }
+
             .editor-container {
                 flex-direction: column;
             }
@@ -405,9 +556,21 @@
             .updates-container {
                 grid-template-columns: 1fr;
             }
+
+            .panel-header {
+                padding: 0.75rem;
+            }
+
+            .panel-title {
+                font-size: 1rem;
+            }
         }
 
         @media (max-width: 480px) {
+            main {
+                padding: 0.75rem;
+            }
+
             .search-container {
                 width: 50%;
             }
@@ -415,12 +578,20 @@
             .panel-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.5rem;
+                gap: 0.75rem;
             }
 
             .panel-actions {
                 width: 100%;
                 justify-content: space-between;
+            }
+
+            .dropzone {
+                padding: 1.5rem;
+            }
+
+            .dropzone-text {
+                font-size: 0.9rem;
             }
         }
 
@@ -432,6 +603,7 @@
             color: var(--text-color);
             cursor: pointer;
             font-size: 1.5rem;
+            transition: color 0.3s ease;
         }
 
         .mobile-menu {
@@ -443,10 +615,10 @@
             background-color: var(--background-color);
             z-index: 1000;
             transform: translateX(-100%);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease, background-color 0.3s ease;
             display: flex;
             flex-direction: column;
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .mobile-menu.active {
@@ -457,7 +629,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .mobile-menu-close {
@@ -466,6 +640,7 @@
             color: var(--text-color);
             cursor: pointer;
             font-size: 1.5rem;
+            transition: color 0.3s ease;
         }
 
         .mobile-menu-items {
@@ -474,17 +649,27 @@
             gap: 1rem;
         }
 
+        .mobile-menu-items .btn {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
         /* CodeMirror Customization */
         .CodeMirror {
             height: 100% !important;
             font-family: 'Roboto Mono', monospace;
             font-size: 14px;
-            line-height: 1.5;
-            border-radius: 0 0 8px 8px;
+            line-height: 1.6;
+            border-radius: 0 0 12px 12px;
             transition: all 0.3s ease;
         }
 
         .cm-s-material.CodeMirror {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+        }
+
+        .cm-s-material-lighter.CodeMirror {
             background-color: var(--surface-color);
             color: var(--text-color);
         }
@@ -497,24 +682,26 @@
             list-style: none;
             margin: 0;
             padding: 0;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
             background-color: var(--surface-color);
             color: var(--text-color);
             max-height: 20em;
             overflow-y: auto;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .CodeMirror-hint {
             margin: 0;
-            padding: 0.5rem;
+            padding: 0.6rem;
             white-space: pre;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         li.CodeMirror-hint-active {
             background-color: var(--accent-color);
-            color: white;
+            color: var(--text-color);
         }
 
         /* Settings Panel */
@@ -522,15 +709,16 @@
             position: fixed;
             top: 0;
             right: 0;
-            width: 300px;
+            width: 350px;
             height: 100%;
             background-color: var(--surface-color);
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            box-shadow: -5px 0 20px var(--shadow-color);
             z-index: 1000;
             transform: translateX(100%);
-            transition: transform 0.3s;
-            padding: 1rem;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            padding: 1.5rem;
             overflow-y: auto;
+            border-left: 1px solid var(--border-color);
         }
 
         .settings-panel.active {
@@ -541,7 +729,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .settings-close {
@@ -550,46 +740,52 @@
             color: var(--text-color);
             cursor: pointer;
             font-size: 1.5rem;
+            transition: color 0.3s ease;
         }
 
         .settings-section {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .settings-section-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.25rem;
-            border-bottom: 1px solid var(--accent-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .settings-item {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         .settings-item label {
             display: block;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         .settings-item select,
         .settings-item input {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.75rem;
             background-color: var(--secondary-color);
             color: var(--text-color);
-            border: none;
-            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             transition: all 0.3s ease;
-            border: 1px solid transparent;
+            font-size: 0.95rem;
         }
 
         .settings-item select:focus,
         .settings-item input:focus {
             border-color: var(--info-color);
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+            outline: none;
         }
 
         /* Tabs */
@@ -598,21 +794,34 @@
             background-color: var(--primary-color);
             overflow-x: auto;
             white-space: nowrap;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s ease;
         }
 
         .tab {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.25rem;
             cursor: pointer;
             border-bottom: 2px solid transparent;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+
+        .tab:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .tab.active {
             border-bottom-color: var(--info-color);
+            background-color: rgba(33, 150, 243, 0.1);
         }
 
         .tab-content {
             display: none;
+            padding: 1rem;
+            background-color: var(--surface-color);
+            border-radius: 0 0 8px 8px;
+            transition: background-color 0.3s ease;
         }
 
         .tab-content.active {
@@ -639,7 +848,6 @@
 
         /* Enhanced Footer */
         footer {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             padding: 1.5rem;
             font-size: 0.95rem;
             letter-spacing: 0.5px;
@@ -647,7 +855,7 @@
 
         /* Enhanced Mobile Menu */
         .mobile-menu {
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 5px 0 15px var(--shadow-color);
         }
 
         .mobile-menu-items {
@@ -663,11 +871,11 @@
         /* Enhanced Search Input */
         .search-container input {
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
         }
 
         .search-container input:focus {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px var(--shadow-color);
             background-color: var(--accent-color);
         }
 
@@ -676,7 +884,7 @@
             transition: all 0.3s ease;
             position: relative;
             padding: 0.5rem 1rem;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
         .logo:hover {
@@ -699,18 +907,98 @@
             width: 80%;
         }
 
-        /* Enhanced Settings Panel */
-
-        /* Enhanced CodeMirror */
-
         /* Add CSS class for the editing effect */
         .CodeMirror.editing {
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--accent-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--info-color);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--info-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Theme Switch Container */
+        .theme-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-switch-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--info-color);
         }
     </style>
     <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material-lighter.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
 </head>
 <body>
@@ -725,6 +1013,9 @@
             <input type="text" id="search-input" placeholder="Որոնել կոդի մեջ...">
         </div>
         <div class="header-actions">
+            <button class="theme-toggle" id="theme-toggle">
+                <i class="material-icons" id="theme-icon">dark_mode</i>
+            </button>
             <button class="btn" id="settings-btn">
                 <i class="material-icons">settings</i>
                 Կարգավորումներ
@@ -844,6 +1135,13 @@
             </button>
         </div>
         <div class="mobile-menu-items">
+            <div class="theme-switch-container">
+                <span class="theme-switch-label">Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="mobile-theme-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
             <button class="btn" id="mobile-settings-btn">
                 <i class="material-icons">settings</i>
                 Կարգավորումներ
@@ -872,14 +1170,19 @@
             </button>
         </div>
         <div class="settings-section">
-            <h3 class="settings-section-title">Խմբագիր</h3>
+            <h3 class="settings-section-title">Թեմա</h3>
             <div class="settings-item">
-                <label for="theme-selector">Ֆոնի գույն</label>
-                <select id="theme-selector">
-                    <option value="material">Մութ</option>
-                    <option value="material-lighter">Լույս</option>
-                </select>
+                <div class="theme-switch-container">
+                    <span class="theme-switch-label">Dark Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="settings-theme-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
+        </div>
+        <div class="settings-section">
+            <h3 class="settings-section-title">Խմբագիր</h3>
             <div class="settings-item">
                 <label for="font-size">Տառաչափ</label>
                 <input type="number" id="font-size" min="10" max="24" value="14">
@@ -946,7 +1249,6 @@
         const settingsBtn = document.getElementById('settings-btn');
         const settingsPanel = document.getElementById('settings-panel');
         const settingsClose = document.getElementById('settings-close');
-        const themeSelector = document.getElementById('theme-selector');
         const fontSize = document.getElementById('font-size');
         const tabSize = document.getElementById('tab-size');
         const autosaveInterval = document.getElementById('autosave-interval');
@@ -963,6 +1265,10 @@
         const updatesContainer = document.getElementById('updates-container');
         const checkUpdatesBtn = document.getElementById('check-updates-btn');
         const notificationContainer = document.getElementById('notification-container');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const settingsThemeToggle = document.getElementById('settings-theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
 
         // CodeMirror Instance
         let codeMirror;
@@ -973,7 +1279,7 @@
 
         // Settings
         let settings = {
-            theme: 'material',
+            theme: 'dark',
             fontSize: 14,
             tabSize: 4,
             autosaveInterval: 30
@@ -987,6 +1293,7 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             initCodeMirror();
             initPreview();
             loadFromLocalStorage();
@@ -996,11 +1303,55 @@
             showNotification('Բարի գալուստ Aria Code Editor!', 'info');
         });
 
+        // Initialize Theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            settings.theme = savedTheme;
+            
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeIcon.textContent = 'light_mode';
+                settingsThemeToggle.checked = false;
+                mobileThemeToggle.checked = false;
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = 'dark_mode';
+                settingsThemeToggle.checked = true;
+                mobileThemeToggle.checked = true;
+            }
+        }
+
+        // Toggle Theme
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            settings.theme = newTheme;
+            
+            if (newTheme === 'light') {
+                themeIcon.textContent = 'light_mode';
+                settingsThemeToggle.checked = false;
+                mobileThemeToggle.checked = false;
+                codeMirror.setOption('theme', 'material-lighter');
+            } else {
+                themeIcon.textContent = 'dark_mode';
+                settingsThemeToggle.checked = true;
+                mobileThemeToggle.checked = true;
+                codeMirror.setOption('theme', 'material');
+            }
+            
+            showNotification(`Switched to ${newTheme} mode`, 'info');
+        }
+
         // Initialize CodeMirror
         function initCodeMirror() {
+            const theme = settings.theme === 'light' ? 'material-lighter' : 'material';
+            
             codeMirror = CodeMirror.fromTextArea(editor, {
                 mode: 'text/html',
-                theme: 'material',
+                theme: theme,
                 lineNumbers: true,
                 autoCloseBrackets: true,
                 autoCloseTags: true,
@@ -1042,6 +1393,11 @@
 
         // Setup Event Listeners
         function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            settingsThemeToggle.addEventListener('change', toggleTheme);
+            mobileThemeToggle.addEventListener('change', toggleTheme);
+            
             // Language selector
             languageSelector.addEventListener('change', () => {
                 codeMirror.setOption('mode', languageSelector.value);
@@ -1075,14 +1431,6 @@
                 mobileMenu.classList.remove('active');
             });
             settingsClose.addEventListener('click', () => settingsPanel.classList.remove('active'));
-
-            // Theme selector
-            themeSelector.addEventListener('change', () => {
-                settings.theme = themeSelector.value;
-                codeMirror.setOption('theme', settings.theme);
-                saveSettings();
-                showNotification(`Ֆոնի գույնը փոխվել է ${themeSelector.options[themeSelector.selectedIndex].text}`, 'info');
-            });
 
             // Font size
             fontSize.addEventListener('change', () => {
@@ -1170,7 +1518,7 @@
             }
             
             if (savedSettings) {
-                settings = JSON.parse(savedSettings);
+                settings = {...settings, ...JSON.parse(savedSettings)};
                 applySettings();
             }
             
@@ -1179,8 +1527,8 @@
 
         // Apply Settings
         function applySettings() {
-            themeSelector.value = settings.theme;
-            codeMirror.setOption('theme', settings.theme);
+            const theme = settings.theme === 'light' ? 'material-lighter' : 'material';
+            codeMirror.setOption('theme', theme);
             
             fontSize.value = settings.fontSize;
             document.querySelector('.CodeMirror').style.fontSize = `${settings.fontSize}px`;
@@ -1251,7 +1599,7 @@
                         currentFileName = backup.fileName;
                         
                         if (backup.settings) {
-                            settings = backup.settings;
+                            settings = {...settings, ...backup.settings};
                             applySettings();
                             saveSettings();
                         }
@@ -1549,7 +1897,7 @@
 
         // Check for Updates
         function checkForUpdates() {
-            showNotification('Թարմացումների ստուգում...', 'info');
+            const loading = showLoading('Թարմացումների ստուգում...');
             
             // Simulate checking for updates
             setTimeout(() => {
@@ -1564,6 +1912,7 @@
                 updates.unshift(newUpdate);
                 renderUpdates();
                 
+                hideLoading(loading);
                 showNotification('Հասանելի է նոր թարմացում!', 'success');
             }, 1500);
         }
@@ -1603,12 +1952,14 @@
                 notification.style.animation = 'slideOut 0.3s ease-out forwards';
                 
                 setTimeout(() => {
-                    notificationContainer.removeChild(notification);
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
                 }, 300);
             }, 3000);
         }
 
-        // Add loading indicator when performing operations
+        // Show Loading
         function showLoading(message) {
             const notification = document.createElement('div');
             notification.className = 'notification info loading';
@@ -1629,6 +1980,7 @@
             return notification;
         }
 
+        // Hide Loading
         function hideLoading(loadingElement) {
             if (loadingElement) {
                 loadingElement.style.animation = 'slideOut 0.3s ease-out forwards';
@@ -1640,28 +1992,6 @@
                 }, 300);
             }
         }
-
-        // Enhance the check for updates function with loading indicator
-        checkUpdatesBtn.addEventListener('click', () => {
-            const loading = showLoading('Թարմացումների ստուգում...');
-            
-            // Simulate checking for updates
-            setTimeout(() => {
-                // Simulate a new update
-                const newUpdate = {
-                    id: updates.length + 1,
-                    title: 'Նոր գործառույթ: Auto-complete',
-                    date: new Date().toISOString().split('T')[0],
-                    description: 'Ավելացվել է ավտոմատ լրացման խելացի առաջարկներ բոլոր աջակցվող լեզուների համար:'
-                };
-                
-                updates.unshift(newUpdate);
-                renderUpdates();
-                
-                hideLoading(loading);
-                showNotification('Հասանելի է նոր թարմացում!', 'success');
-            }, 1500);
-        }, { once: false });
 
         // Add subtle animation to the editor when typing
         codeMirror.on('change', () => {
@@ -1716,15 +2046,6 @@
             originalSaveToLocalStorage();
             visualFeedbackOnSave();
         };
-
-        // Add CSS class for the editing effect
-        const style = document.createElement('style');
-        style.textContent = `
-.CodeMirror.editing {
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
-}
-`;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
