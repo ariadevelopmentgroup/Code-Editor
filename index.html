@@ -58,7 +58,7 @@
         }
 
         body {
-            background-color: var(--background-color);
+            background-color: #f9fafb;
             color: var(--text-color);
             min-height: 100vh;
             display: flex;
@@ -68,7 +68,7 @@
 
         /* Header Styles */
         header {
-            background-color: var(--primary-color);
+            background-color: #f9fafb;
             padding: 1rem;
             display: flex;
             justify-content: space-between;
@@ -110,6 +110,7 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px var(--shadow-color);
+            border: 1px solid var(--border-color);
         }
 
         .search-container input:focus {
@@ -144,9 +145,14 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            line-height: 1;
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn:hover {
@@ -183,7 +189,7 @@
         }
 
         .theme-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         /* Main Content Styles */
@@ -194,6 +200,7 @@
             padding: 1.5rem;
             gap: 1.5rem;
             transition: padding 0.3s ease;
+            background-color: #f9fafb;
         }
 
         .editor-container {
@@ -205,7 +212,7 @@
 
         .panel {
             flex: 1;
-            background: var(--card-gradient);
+            background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 16px var(--shadow-color);
             overflow: hidden;
@@ -221,7 +228,7 @@
         }
 
         .panel-header {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: #f0f2f5;
             padding: 1rem;
             display: flex;
             justify-content: space-between;
@@ -236,7 +243,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -278,9 +285,9 @@
         /* Language Selector */
         .language-selector {
             padding: 0.6rem 1rem;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            border: none;
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -314,7 +321,7 @@
         .section-title {
             font-size: 1.5rem;
             font-weight: 500;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -325,7 +332,7 @@
         }
 
         .update-card {
-            background: var(--card-gradient);
+            background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 12px var(--shadow-color);
             padding: 1.5rem;
@@ -360,13 +367,13 @@
             font-size: 1.2rem;
             font-weight: 500;
             margin-bottom: 0.75rem;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
         .update-card-date {
             font-size: 0.85rem;
-            color: var(--text-secondary-color);
+            color: #666666;
             margin-bottom: 0.75rem;
             transition: color 0.3s ease;
         }
@@ -374,7 +381,7 @@
         .update-card-description {
             font-size: 0.95rem;
             line-height: 1.5;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -401,11 +408,11 @@
 
         /* Footer Styles */
         footer {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: #f0f2f5;
             padding: 1.5rem;
             text-align: center;
             font-size: 0.95rem;
-            color: var(--text-secondary-color);
+            color: #666666;
             margin-top: auto;
             transition: background 0.3s ease, color 0.3s ease;
         }
@@ -422,8 +429,8 @@
         }
 
         .notification {
-            background-color: var(--surface-color);
-            color: var(--text-color);
+            background-color: #ffffff;
+            color: #333333;
             padding: 1rem 1.25rem;
             border-radius: 10px;
             box-shadow: 0 4px 16px var(--shadow-color);
@@ -519,12 +526,12 @@
 
         .dropzone-text {
             font-size: 1.1rem;
-            color: var(--text-secondary-color);
+            color: #666666;
             transition: color 0.3s ease;
         }
 
         .dropzone:hover .dropzone-text {
-            color: var(--text-color);
+            color: #333333;
         }
 
         /* Responsive Styles */
@@ -602,7 +609,7 @@
             display: none;
             background: none;
             border: none;
-            color: var(--text-color);
+            color: #333333;
             cursor: pointer;
             font-size: 1.5rem;
             transition: color 0.3s ease;
@@ -614,7 +621,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--background-color);
+            background-color: #f9fafb;
             z-index: 1000;
             transform: translateX(-100%);
             transition: transform 0.3s ease, background-color 0.3s ease;
@@ -639,7 +646,7 @@
         .mobile-menu-close {
             background: none;
             border: none;
-            color: var(--text-color);
+            color: #333333;
             cursor: pointer;
             font-size: 1.5rem;
             transition: color 0.3s ease;
@@ -686,8 +693,8 @@
             padding: 0;
             border-radius: 8px;
             box-shadow: 0 4px 12px var(--shadow-color);
-            background-color: var(--surface-color);
-            color: var(--text-color);
+            background-color: #ffffff;
+            color: #333333;
             max-height: 20em;
             overflow-y: auto;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -703,7 +710,7 @@
 
         li.CodeMirror-hint-active {
             background-color: var(--accent-color);
-            color: var(--text-color);
+            color: #333333;
         }
 
         /* Settings Panel */
@@ -713,7 +720,7 @@
             right: 0;
             width: 350px;
             height: 100%;
-            background-color: var(--surface-color);
+            background-color: #ffffff;
             box-shadow: -5px 0 20px var(--shadow-color);
             z-index: 1000;
             transform: translateX(100%);
@@ -739,7 +746,7 @@
         .settings-close {
             background: none;
             border: none;
-            color: var(--text-color);
+            color: #333333;
             cursor: pointer;
             font-size: 1.5rem;
             transition: color 0.3s ease;
@@ -755,7 +762,7 @@
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -767,7 +774,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -775,8 +782,8 @@
         .settings-item input {
             width: 100%;
             padding: 0.75rem;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
+            background-color: #f9fafb;
+            color: #333333;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -793,7 +800,7 @@
         /* Tabs */
         .tabs {
             display: flex;
-            background-color: var(--primary-color);
+            background-color: #f0f2f5;
             overflow-x: auto;
             white-space: nowrap;
             border-radius: 8px;
@@ -806,11 +813,11 @@
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: all 0.3s ease;
-            color: var(--text-color);
+            color: #333333;
         }
 
         .tab:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .tab.active {
@@ -821,7 +828,7 @@
         .tab-content {
             display: none;
             padding: 1rem;
-            background-color: var(--surface-color);
+            background-color: #ffffff;
             border-radius: 0 0 8px 8px;
             transition: background-color 0.3s ease;
         }
@@ -878,7 +885,7 @@
 
         .search-container input:focus {
             box-shadow: 0 4px 8px var(--shadow-color);
-            background-color: var(--accent-color);
+            background-color: #f0f2f5;
         }
 
         /* Enhanced Logo */
@@ -890,7 +897,7 @@
         }
 
         .logo:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .logo::after {
@@ -973,7 +980,7 @@
 
         .theme-switch-label {
             font-size: 0.9rem;
-            color: var(--text-color);
+            color: #333333;
             transition: color 0.3s ease;
         }
 
@@ -984,12 +991,12 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--secondary-color);
+            background: #f0f2f5;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
+            background: #c1c9d6;
             border-radius: 10px;
         }
 
@@ -1225,7 +1232,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/swift/swift.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/css-hint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
@@ -1833,4 +1840,222 @@
                 {
                     id: 3,
                     title: 'Կրկնօրինակում և վերականգնում',
+                    date: '2025-03-10',
+                    description: 'Ավելացվել է կոդը կրկնօրինակելու և վերականգնելու գործառույթը:'
+                },
+                {
+                    id: 4,
+                    title: 'Իրական ժամանակի նախադիտում',
+                    date: '2025-04-01',
+                    description: 'Ավելացվել է կոդի իրական ժամանակի նախադիտման գործառույթը:'
+                }
+            ];
+            
+            renderUpdates();
+        }
+
+        // Render Updates
+        function renderUpdates() {
+            updatesContainer.innerHTML = '';
+            
+            // Sort updates by date (newest first)
+            updates.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            updates.forEach(update => {
+                const card = document.createElement('div');
+                card.className = 'update-card';
+                
+                const title = document.createElement('h3');
+                title.className = 'update-card-title';
+                title.textContent = update.title;
+                
+                const date = document.createElement('p');
+                date.className = 'update-card-date';
+                date.textContent = formatDate(update.date);
+                
+                const description = document.createElement('p');
+                description.className = 'update-card-description';
+                description.textContent = update.description;
+                
+                card.appendChild(title);
+                card.appendChild(date);
+                card.appendChild(description);
+                
+                // Add NEW badge if the update is less than 3 days old
+                const updateDate = new Date(update.date);
+                const now = new Date();
+                const diffTime = Math.abs(now - updateDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 3) {
+                    const badge = document.createElement('span');
+                    badge.className = 'new-badge';
+                    badge.textContent = 'NEW';
+                    card.appendChild(badge);
+                }
+                
+                updatesContainer.appendChild(card);
+            });
+        }
+
+        // Format Date
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric'};
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Check for Updates
+        function checkForUpdates() {
+            const loading = showLoading('Թարմացումների ստուգում...');
+            
+            // Simulate checking for updates
+            setTimeout(() => {
+                // Simulate a new update
+                const newUpdate = {
+                    id: updates.length + 1,
+                    title: 'Նոր գործառույթ: Auto-complete',
+                    date: new Date().toISOString().split('T')[0],
+                    description: 'Ավելացվել է ավտոմատ լրացման խելացի առաջարկներ բոլոր աջակցվող լեզուների համար:'
+                };
+                
+                updates.unshift(newUpdate);
+                renderUpdates();
+                
+                hideLoading(loading);
+                showNotification('Հասանելի է նոր թարմացում!', 'success');
+            }, 1500);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icon = document.createElement('i');
+            icon.className = 'material-icons';
+            
+            switch (type) {
+                case 'success':
+                    icon.textContent = 'check_circle';
+                    break;
+                case 'error':
+                    icon.textContent = 'error';
+                    break;
+                case 'warning':
+                    icon.textContent = 'warning';
+                    break;
+                default:
+                    icon.textContent = 'info';
+            }
+            
+            const text = document.createElement('span');
+            text.textContent = message;
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
+            
+            notificationContainer.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Show Loading
+        function showLoading(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification info loading';
+            notification.id = 'loading-notification';
+            
+            const icon = document.createElement('i');
+            icon.className = 'material-icons';
+            icon.textContent = 'hourglass_empty';
+            
+            const text = document.createElement('span');
+            text.textContent = message || 'Բեռնվում է...';
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
+            
+            notificationContainer.appendChild(notification);
+            
+            return notification;
+        }
+
+        // Hide Loading
+        function hideLoading(loadingElement) {
+            if (loadingElement) {
+                loadingElement.style.animation = 'slideOut 0.3s ease-out forwards';
+                
+                setTimeout(() => {
+                    if (loadingElement.parentNode) {
+                        loadingElement.parentNode.removeChild(loadingElement);
+                    }
+                }, 300);
+            }
+        }
+
+        // Add subtle animation to the editor when typing
+        codeMirror.on('change', () => {
+            const editorElement = document.querySelector('.CodeMirror');
+            editorElement.classList.add('editing');
+            
+            setTimeout(() => {
+                editorElement.classList.remove('editing');
+            }, 300);
+        });
+
+        // Add a welcome animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach((panel, index) => {
+                panel.style.opacity = '0';
+                panel.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    panel.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    panel.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
+                }, 100 + (index * 150));
+            });
+        });
+
+        // Add a pulse effect to the NEW badge
+        setInterval(() => {
+            const badges = document.querySelectorAll('.new-badge');
+            badges.forEach(badge => {
+                badge.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    badge.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }, 3000);
+
+        // Add a visual feedback when saving
+        function visualFeedbackOnSave() {
+            const editorElement = document.querySelector('.CodeMirror');
+            editorElement.style.transition = 'box-shadow 0.3s ease';
+            editorElement.style.boxShadow = '0 0 0 2px rgba(76, 175, 80, 0.5)';
+            
+            setTimeout(() => {
+                editorElement.style.boxShadow = '';
+            }, 500);
+        }
+
+        // Override the saveToLocalStorage function to add visual feedback
+        const originalSaveToLocalStorage = saveToLocalStorage;
+        saveToLocalStorage = function() {
+            originalSaveToLocalStorage();
+            visualFeedbackOnSave();
+        };
+    </script>
+</body>
+</html>
 
