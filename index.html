@@ -1462,5 +1462,347 @@
                 settings.autosaveInterval = parseInt(autosaveInterval.value);
                 restartAutosave();
                 saveSettings();
-                showNotification(`Ավտոպահպանման ըն
+                showNotification(`Ավտոպահպանման ընդմիջումը փոխվել է ${settings.autosaveInterval} վայրկյան`, 'info');
+            });
+
+            // Mobile menu
+            mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.add('active'));
+            mobileMenuClose.addEventListener('click', () => mobileMenu.classList.remove('active'));
+
+            // Dropzone events
+            dropzone.addEventListener('dragover', handleDragOver);
+            dropzone.addEventListener('drop', handleFileDrop);
+            dropzone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileInput);
+
+            // Check updates button
+            checkUpdatesBtn.addEventListener('click', loadUpdates);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icon = document.createElement('i');
+            icon.className = 'material-icons';
+            
+            switch (type) {
+                case 'success':
+                    icon.textContent = 'check_circle';
+                    break;
+                case 'error':
+                    icon.textContent = 'error';
+                    break;
+                case 'warning':
+                    icon.textContent = 'warning';
+                    break;
+                default:
+                    icon.textContent = 'info';
+            }
+            
+            const text = document.createElement('span');
+            text.textContent = message;
+            
+            notification.appendChild(icon);
+            notification.appendChild(text);
+            
+            notificationContainer.appendChild(notification);
+            
+            // Remove notification after 2 seconds (immediately without animation)
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 2000);
+        }
+
+        // Handle Drag Over
+        function handleDragOver(event) {
+            event.preventDefault();
+            dropzone.classList.add('active');
+        }
+
+        // Handle File Drop
+        function handleFileDrop(event) {
+            event.preventDefault();
+            dropzone.classList.remove('active');
+            const file = event.dataTransfer.files[0];
+            handleFile(file);
+        }
+
+        // Handle File Input
+        function handleFileInput(event) {
+            const file = event.target.files[0];
+            handleFile(file);
+        }
+
+        // Handle File
+        function handleFile(file) {
+            if (!file) {
+                showNotification('Ֆայլը չի ընտրվել', 'error');
+                return;
+            }
+
+            if (file.size > 3 * 1024 * 1024 * 1024) {
+                showNotification('Ֆայլը չափազանց մեծ է (առավելագույնը 3 ԳԲ)', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                codeMirror.setValue(event.target.result);
+                currentFileName = file.name;
+                updateFileExtension(languageSelector.value);
+                showNotification(`${file.name} ֆայլը բեռնվել է`, 'success');
+            };
+            reader.onerror = () => {
+                showNotification('Ֆայլը չհաջողվեց բեռնել', 'error');
+            };
+            reader.readAsText(file);
+        }
+
+        // Update File Extension
+        function updateFileExtension(mode) {
+            switch (mode) {
+                case 'text/html':
+                    currentFileExtension = 'html';
+                    break;
+                case 'text/css':
+                    currentFileExtension = 'css';
+                    break;
+                case 'text/javascript':
+                    currentFileExtension = 'js';
+                    break;
+                case 'text/x-python':
+                    currentFileExtension = 'py';
+                    break;
+                case 'text/x-java':
+                    currentFileExtension = 'java';
+                    break;
+                case 'text/x-c++src':
+                    currentFileExtension = 'cpp';
+                    break;
+                case 'text/x-csharp':
+                    currentFileExtension = 'cs';
+                    break;
+                case 'text/x-php':
+                    currentFileExtension = 'php';
+                    break;
+                case 'text/x-ruby':
+                    currentFileExtension = 'rb';
+                    break;
+                case 'text/x-go':
+                    currentFileExtension = 'go';
+                    break;
+                case 'text/x-rust':
+                    currentFileExtension = 'rs';
+                    break;
+                case 'text/x-swift':
+                    currentFileExtension = 'swift';
+                    break;
+                case 'text/x-typescript':
+                    currentFileExtension = 'ts';
+                    break;
+                default:
+                    currentFileExtension = 'txt';
+            }
+        }
+
+        // Create Backup
+        function createBackup() {
+            const code = codeMirror.getValue();
+            const backup = {
+                code: code,
+                language: languageSelector.value,
+                theme: settings.theme,
+                fontSize: settings.fontSize,
+                tabSize: settings.tabSize,
+                autosaveInterval: settings.autosaveInterval
+            };
+            const json = JSON.stringify(backup);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AriaCodeEditorBackup_${new Date().toISOString()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('Պահուստավորումը ստեղծվել է', 'success');
+        }
+
+        // Import Backup
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                showNotification('Պահուստավորման ֆայլը չի ընտրվել', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const backup = JSON.parse(event.target.result);
+                    codeMirror.setValue(backup.code);
+                    languageSelector.value = backup.language;
+                    codeMirror.setOption('mode', backup.language);
+                    settings.theme = backup.theme;
+                    settings.fontSize = backup.fontSize;
+                    settings.tabSize = backup.tabSize;
+                    settings.autosaveInterval = backup.autosaveInterval;
+                    initTheme();
+                    document.querySelector('.CodeMirror').style.fontSize = `${settings.fontSize}px`;
+                    codeMirror.setOption('tabSize', settings.tabSize);
+                    codeMirror.setOption('indentUnit', settings.tabSize);
+                    fontSize.value = settings.fontSize;
+                    tabSize.value = settings.tabSize;
+                    autosaveInterval.value = settings.autosaveInterval;
+                    restartAutosave();
+                    saveSettings();
+                    showNotification('Պահուստավորումը ներմուծվել է', 'success');
+                } catch (error) {
+                    showNotification('Պահուստավորման ֆայլը վնասված է', 'error');
+                }
+            };
+            reader.onerror = () => {
+                showNotification('Պահուստավորման ֆայլը չհաջողվեց բեռնել', 'error');
+            };
+            reader.readAsText(file);
+        }
+
+        // Download Code
+        function downloadCode() {
+            const code = codeMirror.getValue();
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFileName.replace(/\.[^/.]+$/, "") + '.' + currentFileExtension;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('Կոդը ներբեռնվել է', 'success');
+        }
+
+        // Search In Code
+        function searchInCode() {
+            const query = searchInput.value;
+            if (query) {
+                codeMirror.execCommand('findPersistent', query);
+            } else {
+                codeMirror.execCommand('clearSearch');
+            }
+        }
+
+        // Save To Local Storage
+        function saveToLocalStorage() {
+            const code = codeMirror.getValue();
+            localStorage.setItem('code', code);
+            showNotification('Կոդը պահպանվել է տեղական պահոցում', 'success');
+        }
+
+        // Load From Local Storage
+        function loadFromLocalStorage() {
+            const code = localStorage.getItem('code');
+            if (code) {
+                codeMirror.setValue(code);
+                showNotification('Կոդը բեռնվել է տեղական պահոցից', 'info');
+            }
+        }
+
+        // Save Settings
+        function saveSettings() {
+            localStorage.setItem('settings', JSON.stringify(settings));
+        }
+
+        // Load Settings
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('settings');
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                fontSize.value = settings.fontSize;
+                tabSize.value = settings.tabSize;
+                autosaveInterval.value = settings.autosaveInterval;
+            }
+        }
+
+        // Start Autosave
+        function startAutosave() {
+            autosaveTimer = setInterval(() => {
+                saveToLocalStorage();
+            }, settings.autosaveInterval * 1000);
+        }
+
+        // Restart Autosave
+        function restartAutosave() {
+            clearInterval(autosaveTimer);
+            startAutosave();
+        }
+
+        // Load Updates
+        function loadUpdates() {
+            updatesContainer.innerHTML = '<p class="loading">Թարմացումները բեռնվում են...</p>';
+            fetch('updates.json')
+                .then(response => response.json())
+                .then(data => {
+                    updates = data;
+                    displayUpdates();
+                })
+                .catch(error => {
+                    console.error('Սխալ թարմացումներ բեռնելիս:', error);
+                    updatesContainer.innerHTML = '<p class="error">Թարմացումները չհաջողվեց բեռնել</p>';
+                });
+        }
+
+        // Display Updates
+        function displayUpdates() {
+            updatesContainer.innerHTML = '';
+            if (updates.length === 0) {
+                updatesContainer.innerHTML = '<p>Թարմացումներ չկան</p>';
+                return;
+            }
+
+            updates.forEach(update => {
+                const updateCard = document.createElement('div');
+                updateCard.className = 'update-card';
+
+                const updateCardTitle = document.createElement('h3');
+                updateCardTitle.className = 'update-card-title';
+                updateCardTitle.textContent = update.title;
+
+                const updateCardDate = document.createElement('div');
+                updateCardDate.className = 'update-card-date';
+                updateCardDate.textContent = update.date;
+
+                const updateCardDescription = document.createElement('p');
+                updateCardDescription.className = 'update-card-description';
+                updateCardDescription.textContent = update.description;
+
+                updateCard.appendChild(updateCardTitle);
+                updateCard.appendChild(updateCardDate);
+                updateCard.appendChild(updateCardDescription);
+
+                if (update.new) {
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'new-badge';
+                    newBadge.textContent = 'ՆՈՐ';
+                    updateCard.appendChild(newBadge);
+                }
+
+                updatesContainer.appendChild(updateCard);
+            });
+        }
+
+        // Hide Loading
+        function hideLoading(loadingElement) {
+            if (loadingElement && loadingElement.parentNode) {
+                loadingElement.parentNode.removeChild(loadingElement);
+            }
+        }
+    </script>
+</body>
+</html>
 
